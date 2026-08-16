@@ -34,19 +34,44 @@ def is_random_Fibonacci_sequence(sequence: tuple) -> bool:
         return False
     elif n == 3:
         return True
-    elif sequence[2] in [0, 2]:
-        pairs_sum = [0, 1, 2]
-        for i in range(3, n):
-            for j in range(i):
-                pairs_sum.append(sequence[j] + sequence[i - 1])
-            if not sequence[i] in pairs_sum:
-                return False
-    else:
-        pairs_sum = [1]
-        for i in range(3, n):
-            for j in range(i - 1):
-                pairs_sum.append(sequence[j] + sequence[i - 1])
-            if not sequence[i] in pairs_sum:
-                return False    
+    pairs_sum = [0, 1, 2]
+    for i in range(3, n):
+        for j in range(i):
+            pairs_sum.append(sequence[j] + sequence[i - 1])
+        if not sequence[i] in pairs_sum:
+            return False  
     return True
 
+class Random_Fibonacci_Sequences:
+    def __init__(self, sequence, sampling_with_replacement):
+        self.sequence = sequence
+        self.sampling_with_replacement = sampling_with_replacement
+        
+    @property
+    def sequence(self):
+        return self._sequence
+    
+    @sequence.setter
+    def sequence(self, new_sequence):
+        if is_random_Fibonacci_sequence(new_sequence):
+            self._sequence = new_sequence
+            
+    @property
+    def sampling_with_replacement(self):
+        return self._sampling_with_replacement
+    
+    @sampling_with_replacement.setter
+    def sampling_with_replacement(self, new_sampling_with_replacement):
+        help_list = [2*element for element in self.sequence]
+        prev_elements = [0, 1]
+        sampling_with_replacement = False
+        for i in range(2, len(self.sequence)):
+            if self.sequence[i] in help_list and prev_elements.find(self.sequence[i]//2, prev_elements.find(self.sequence[i]//2) + 1) != -1:
+                sampling_with_replacement = True
+                break
+        if sampling_with_replacement:
+            if new_sampling_with_replacement:
+                self._sampling_with_replacement = new_sampling_with_replacement
+        else:
+            self._sampling_with_replacement = new_sampling_with_replacement
+        
