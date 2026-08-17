@@ -46,6 +46,8 @@ class Random_Fibonacci_Sequences:
     def __init__(self, sequence, sampling_with_replacement):
         self.sequence = sequence
         self.sampling_with_replacement = sampling_with_replacement
+        self.__length = len(self.sequence)
+        self.__pairs_sum = self.possible_pairs_sum()
         
     @property
     def sequence(self):
@@ -65,7 +67,7 @@ class Random_Fibonacci_Sequences:
         help_list = [2*element for element in self.sequence]
         prev_elements = [0, 1]
         sampling_with_replacement = False
-        for i in range(2, len(self.sequence)):
+        for i in range(2, self.length):
             if self.sequence[i] in help_list and prev_elements.find(self.sequence[i]//2, prev_elements.find(self.sequence[i]//2) + 1) != -1:
                 sampling_with_replacement = True
                 break
@@ -75,3 +77,22 @@ class Random_Fibonacci_Sequences:
         else:
             self._sampling_with_replacement = new_sampling_with_replacement
         
+    def possible_pairs_sum(self):
+        help_list = []
+        if self.sampling_with_replacement:
+            for index, element in enumerate(self.sequence):
+                for element2 in self.sequence[:index + 1]:
+                    help_list.append(element + element2)
+        else:
+            for index, element in enumerate(self.sequence):
+                for element2 in self.sequence[:index]:
+                    help_list.append(element + element2) 
+        self.__pairs_sum = help_list
+        
+    def get_longer(self):
+        element = choice(self.__pairs_sum)
+        self.sequence += (element)
+        self.__length += 1
+        
+    def elements_sum(self):
+        return sum(self.sequence)
