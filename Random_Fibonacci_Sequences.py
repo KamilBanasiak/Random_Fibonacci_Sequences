@@ -90,9 +90,25 @@ class Random_Fibonacci_Sequences:
         self.__pairs_sum = help_list
         
     def get_longer(self):
-        element = choice(self.__pairs_sum)
+        if self.__length == 1:
+            element = 1
+        else:
+            element = choice(self.__pairs_sum)
         self.sequence += (element)
         self.__length += 1
         
     def elements_sum(self):
         return sum(self.sequence)
+    
+    def posibility_of_next_element(self, n):
+        if not isinstance(n, int):
+            return 0
+        if n < 0:
+            return 0
+        if self.__length == 1 and n != 1:
+            return 0
+        if self.__length == 1 and n == 1:
+            return 1
+        if not n in self.__pairs_sum:
+            return 0
+        return self.__pairs_sum.count(n)/len(self.__pairs_sum)
