@@ -94,14 +94,14 @@ class Random_Fibonacci_Sequences:
             element = 1
         else:
             element = choice(self.pairs_sum)
-        self.sequence += (element)
+        self.sequence += tuple([element])
         self.__length += 1
         self.pairs_sum = self.possible_pairs_sum()
         
     def elements_sum(self):
         return sum(self.sequence)
     
-    def posibility_of_next_element(self, n):
+    def probability_of_next_element(self, n):
         if not isinstance(n, int):
             return 0
         if n < 0:
@@ -129,3 +129,12 @@ def how_many_RFS(n: int, sampling_with_replacement: bool) -> int:
         current_list = new_list
         i += 1
     return len(current_list)
+
+def probability_of_getting_RF_sequence(sequence: tuple, sampling_with_replacement = True) -> float: #element by element
+    if not is_random_Fibonacci_sequence(sequence):
+        return 0
+    if sequence in [(0), (0,1)]:
+        return 1
+    score = probability_of_getting_RF_sequence(sequence[:len(sequence)-1], sampling_with_replacement)
+    seq = Random_Fibonacci_Sequences(sequence[:len(sequence)-1], sampling_with_replacement)
+    return score * seq.probability_of_next_element(sequence[-1])                                       
