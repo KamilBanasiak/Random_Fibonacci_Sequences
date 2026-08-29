@@ -130,11 +130,67 @@ def how_many_RFS(n: int, sampling_with_replacement: bool) -> int:
         i += 1
     return len(current_list)
 
-def probability_of_getting_RF_sequence(sequence: tuple, sampling_with_replacement = True) -> float: #element by element
+def probability_of_getting_RF_sequence(sequence: tuple, sampling_with_replacement = True): #element by element
     if not is_random_Fibonacci_sequence(sequence):
         return 0
     if sequence in [(0), (0,1)]:
         return 1
     score = probability_of_getting_RF_sequence(sequence[:len(sequence)-1], sampling_with_replacement)
     seq = Random_Fibonacci_Sequences(sequence[:len(sequence)-1], sampling_with_replacement)
-    return score * seq.probability_of_next_element(sequence[-1])                                       
+    return score * seq.probability_of_next_element(sequence[-1]) 
+
+def get_RFS_whose_sum_is_m(n: int, m: int, sampling_with_replacement = True) -> list:
+    if n <= 0 or m < 0:
+        return None
+    if n == 1 and m == 0:
+        return [(0)]
+    if (n > 1 and m == 0) or (n == 1 and m > 0):
+        return None
+    if n == 2 and m == 1:
+        return [(0, 1)]
+    if n == 2 and m > 1:
+        return None
+    still_possible = True
+    sequences = [(0, 1)]
+    sequences_possible_pairs_sum = [Random_Fibonacci_Sequences(sequences[0], sampling_with_replacement).pairs_sum]    
+    i = 2
+    while i < n:
+        if not sequences:
+            still_possible = False
+            break
+        new_list = []
+        new_lists = []
+        for index, sequence in enumerate(sequences):
+            for pair_sum in sequences_possible_pairs_sum[index]:
+                if sum(sequence) + pair_sum <= m:
+                    new_list.append(sequence + tuple([pair_sum]))
+                    new_lists.append(Random_Fibonacci_Sequences(new_list[-1], sampling_with_replacement).pairs_sum)
+        sequences = new_list
+        sequences_possible_pairs_sum = new_lists
+        i += 1
+    if still_possible:
+        final = list(set([sequence for sequence in sequences if sum(sequence) == m]))
+        if final:
+            return final
+        else:
+            return None
+    else:
+        return None
+    
+# set of nRFS = {sequence in RFS: len(sequence) == n}
+def probability_of_getting_sequence_whose_sum_is_m_from_set_of_nRFS(n: int, m: int, sampling_with_replacement = True):
+    number_of_all_nRFS = how_many_RFS(n, sampling_with_replacement)
+    nRFS_whose_sum_is_m = get_RFS_whose_sum_is_m(n, m, sampling_with_replacement)
+    if nRFS_whose_sum_is_m:
+        return len(nRFS_whose_sum_is_m) / number_of_all_nRFS
+    else:
+        return 0
+    
+def probability_of_getting_nRF_sequence_whose_sum_is_m(n: int, m: int, sampling_with_replacement = True):
+    # element by element
+    probability = 0
+    sequences = get_RFS_whose_sum_is_m(n, m, sampling_with_replacement)
+    if sequences:
+        for sequence in sequences:
+            probability += probability_of_getting_RF_sequence(sequence, sampling_with_replacement)
+    return probability
