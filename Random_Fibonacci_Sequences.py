@@ -194,3 +194,146 @@ def probability_of_getting_nRF_sequence_whose_sum_is_m(n: int, m: int, sampling_
         for sequence in sequences:
             probability += probability_of_getting_RF_sequence(sequence, sampling_with_replacement)
     return probability
+
+
+def enter_n():
+    n = int(input('Enter n as a positive natural number: '))
+    while not (isinstance(n, int) and n > 0):
+        print('Try again')
+        n = int(input('Enter n as a positive natural number: '))
+    return n
+
+def enter_m():
+    m = int(input('Enter m as a natural number: '))
+    while not (isinstance(m, int) and m >= 0):
+        print('Try again')
+        m = int(input('Enter m as a natural number: '))
+    return m    
+
+def enter_way_of_sampling():
+    sampling_with_replacement = input('Sampling with replacement? (Yes/No): ')
+    while not sampling_with_replacement in ['Yes', 'No']:
+        print('Try again')
+        sampling_with_replacement = input('Sampling with replacement? (Yes/No): ')
+    return True if sampling_with_replacement == 'Yes' else False
+
+def enter_sequence():
+    sequence = input('Enter sequence (for example: 0, 1, 2, 3): ')
+    correct = False
+    while not correct:
+        sequence = sequence.split(', ')
+        correct = True
+        for i in range(len(sequence)):
+            if i == 0:
+                if sequence[0][0] == ' ':
+                    sequence[0] = sequence[0][1:]
+            try:
+                sequence[i] = int(sequence[i])
+            except:
+                print('Try again')
+                sequence = input('Enter sequence (for example: 0, 1, 2, 3): ')
+                correct = False
+                break
+    return tuple(sequence)
+
+def main():
+    options = {'start menu': ['1. Generate a random Fibonacci sequence', '2. Check a sequence',
+                              '3. Enter a sequence', '4. Pass a number of random Fibonacci sequences',
+                              '5. Calculate probability of getting the sequence',
+                              '6. Pass random Fibonacci sequences whose sum of elements is m',
+                              '7. Calculate probability of sampling a sequence whose sum is m from set of RFS',
+                              '8. Calculate probability of getting a sequence whose sum is m',
+                              '9. Finish work'],
+                'entering': ['1. Generate a random Fibonacci sequence and enter it',
+                             '2. Check and enter sequence'],
+                'work with sequence': ['1. Display: sequence, way of sampling, list of possible next element of sequence',
+                                       '2. Change the sequence', '3. Change the way of sampling if it is possible',
+                                       '4. Lengthen the sequence', '5. Calculate sum of elements',
+                                       '6. Calculate probability that the next element of this sequence is m',
+                                       '7. Return to the menu', '8. Finish work']}
+    menu = 'start menu'
+    print('Choose options by entering a number')
+    while True:
+        for option in options[menu]:
+            print(option)
+        decision = int(input('What do you want now? '))
+        if not decision in [i for i in range(1, len(options[menu])+1)]:
+            print('Try again')
+            continue
+        if menu == 'start menu' and decision == 1:
+            n = enter_n()
+            sampling_with_replacement = enter_way_of_sampling()
+            print(generate_random_Fibonacci_sequence(n, sampling_with_replacement))
+        elif menu == 'start menu' and decision == 2:
+            sequence = enter_sequence()
+            if is_random_Fibonacci_sequence(sequence):
+                print('Yes, it is a random Fibonacci sequence')
+            else:
+                print('No, it is not a random Fibonacci sequence')
+        elif menu == 'start menu' and decision == 4:
+            n = enter_n()
+            sampling_with_replacement = enter_way_of_sampling()
+            print(how_many_RFS(n, sampling_with_replacement))
+        elif menu == 'start menu' and decision == 5:
+            sequence = enter_sequence()
+            sampling_with_replacement = enter_way_of_sampling()
+            print(probability_of_getting_RF_sequence(sequence, sampling_with_replacement))
+        elif menu == 'start menu' and decision == 6:
+            n = enter_n()
+            m = enter_m()
+            sampling_with_replacement = enter_way_of_sampling()
+            print(get_RFS_whose_sum_is_m(n, m, sampling_with_replacement))
+        elif menu == 'start menu' and decision == 7:
+            n = enter_n()
+            m = enter_m()
+            sampling_with_replacement = enter_way_of_sampling()
+            print(probability_of_getting_sequence_whose_sum_is_m_from_set_of_nRFS(n, m, sampling_with_replacement))         
+        elif menu == 'start menu' and decision == 8:
+            n = enter_n()
+            m = enter_m()
+            sampling_with_replacement = enter_way_of_sampling()
+            print(probability_of_getting_nRF_sequence_whose_sum_is_m(n, m, sampling_with_replacement))            
+        elif (menu == 'start menu' and decision == 9) or (menu == 'work with sequence' and decision == 8):
+            break
+        elif menu == 'start menu' and decision == 3:
+            menu = 'entering'
+        elif menu == 'entering' and decision == 1:
+            n = enter_n()
+            sampling_with_replacement = enter_way_of_sampling()
+            sequence = generate_random_Fibonacci_sequence(n, sampling_with_replacement)
+            print(sequence)
+            menu = 'work with sequence'
+            seq = Random_Fibonacci_Sequences(sequence, sampling_with_replacement)
+        elif menu == 'entering' and decision == 2:
+            sequence = enter_sequence()
+            if is_random_Fibonacci_sequence(sequence):
+                menu = 'work with sequence'
+                seq = Random_Fibonacci_Sequences(sequence, sampling_with_replacement)
+            else:
+                print('Try again later')
+        elif menu == 'work with sequence' and decision == 1:
+            print(f'Sequence: {seq.sequence}')
+            if seq.sampling_with_replacement:
+                sampling = 'sampling with replacement'
+            else:
+                sampling = 'sampling without replacement'
+            print(f'Way of sampling: {sampling}')
+            print(f'List of possible next element of sequence: {list(set(seq.pairs_sum))}')
+        elif menu == 'work with sequence' and decision == 2:
+            menu = 'entering'
+        elif menu == 'work with sequence' and decision == 3:
+            sampling_with_replacement = enter_way_of_sampling()
+            seq.sampling_with_replacement = sampling_with_replacement
+        elif menu == 'work with sequence' and decision == 4:
+            seq.get_longer()
+            print(seq.sequence)
+        elif menu == 'work with sequence' and decision == 5:
+            print(seq.elements_sum())
+        elif menu == 'work with sequence' and decision == 6:
+            m = enter_m()
+            print(seq.probability_of_next_element(m))
+        elif menu == 'work with sequence' and decision == 7:
+            menu = 'start menu'
+
+if __name__ == '__main__':
+    main()
